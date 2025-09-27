@@ -1,7 +1,7 @@
 // 1. Use require instead of import
 const express = require('express');
 const morgan = require('morgan');
-const _ = require('lodash');
+
 
 const path = require('path');
 const fs = require('fs');
@@ -16,41 +16,44 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cargar preguntas desde JSON. En esta variable dispones siempre de todasl as preguntas de la "base de datos"
-const questions = require('./questions.json');
+const questions = JSON.parse(fs.readFileSync('./questions.json', 'utf-8'));
 
 // Endpoint para obtener una pregunta aleatoria (con filtro por categoría)
+
+app.get('/api/categories', (req, res) => {
+  const categories = [...new Set(questions.map(q => q.category))];
+  res.json(categories);
+});
+
+
+
 app.get('/api/question', (req, res) => {
-  
-try{
-
   const { category } = req.query;
-  let filteredQuitions = questions;
-
+  
+  let filteredQuestions = questions;
+  
   if (category) {
-    filteredQuitions = questions.filter(q=> 
-      q.category.toLowerCase() ===category.toLocaleLowerCase());
+    filteredQuestions = questions.filter(question => 
+      question.category.toLowerCase() === category.toLowerCase()
+    );
+    
+    if (filteredQuestions.length === 0) {
+      return res.status(404).json({ 
+        error: `No se encontraron preguntas para la categoría: ${category}` 
+      });
+    }
   }
-
-  const randomIndex = Math.floor(Math.random() * questions.length);
-  const randomQuestion = questions[randomIndex];
+  
+  const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
+  const randomQuestion = filteredQuestions[randomIndex];
+  
   res.json(randomQuestion);
-
-  res.json(randomQuestion);
-} catch (error) {
-    console.error('Error al obtener la pregunta:', error);
-    res.status(500).json({ error: 'Error al obtener la pregunta' });
-  }
 });
 
 // Endpoint para obtener categorías únicas
 app.get('/api/categories', (req, res) => {
- try {
-  const categories = [...new set(questions.map(q=>q.category))];
-  res.json(category);
- } catch (error) {
-  console.log("error al obtener categories", error);
-  res.status(500).json({error:"error interno en el selvidor"})
- }
+  const uniqueCategories = [...new Set(questions.map(q => q.category))];
+  res.json(uniqueCategories);
 });
 
 // Iniciar servidor
