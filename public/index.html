@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>Trivia</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -23,12 +23,12 @@
   </div>
   <button id="next">Siguiente Pregunta</button>
 
-  <script>
+  <script >
     let currentQuestion = null;
     let currentCategory = '';
 
     async function fetchCategories() {
-      const res = await fetch('/api/categories');
+      const res = await fetch('/api/category');
       const categories = await res.json();
       const select = document.getElementById('category-select');
       categories.forEach(cat => {
