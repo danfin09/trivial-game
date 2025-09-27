@@ -28,7 +28,7 @@
     let currentCategory = '';
 
     async function fetchCategories() {
-      const res = await fetch('/api/category');
+      const res = await fetch('/api/categories');
       const categories = await res.json();
       const select = document.getElementById('category-select');
       categories.forEach(cat => {
