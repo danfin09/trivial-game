@@ -1,8 +1,6 @@
 // 1. Use require instead of import
 const express = require('express');
 const morgan = require('morgan');
-
-
 const path = require('path');
 const fs = require('fs');
 
@@ -12,7 +10,6 @@ const PORT = 3001;
 
 // Middleware
 app.use(express.json());
-app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cargar preguntas desde JSON. En esta variable dispones siempre de todasl as preguntas de la "base de datos"
@@ -24,7 +21,6 @@ app.get('/api/categories', (req, res) => {
   const categories = [...new Set(questions.map(q => q.category))];
   res.json(categories);
 });
-
 
 
 app.get('/api/question', (req, res) => {
@@ -46,7 +42,7 @@ app.get('/api/question', (req, res) => {
   
   const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
   const randomQuestion = filteredQuestions[randomIndex];
-  
+
   res.json(randomQuestion);
 });
 
