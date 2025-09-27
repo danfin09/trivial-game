@@ -1,6 +1,8 @@
 // 1. Use require instead of import
 const express = require('express');
 const morgan = require('morgan');
+const _ = require('lodash');
+
 const path = require('path');
 const fs = require('fs');
 
@@ -14,14 +16,24 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cargar preguntas desde JSON. En esta variable dispones siempre de todasl as preguntas de la "base de datos"
-const questions = JSON.parse(fs.readFileSync('./questions.json', 'utf-8'));
+const questions = require('./questions.json');
 
 // Endpoint para obtener una pregunta aleatoria (con filtro por categoría)
 app.get('/api/question', (req, res) => {
   
 try{
+
+  const { category } = req.query;
+  let filteredQuitions = questions;
+
+  if (category) {
+    filteredQuitions = questions.filter(q=> 
+      q.category.toLowerCase() ===category.toLocaleLowerCase());
+  }
+
   const randomIndex = Math.floor(Math.random() * questions.length);
   const randomQuestion = questions[randomIndex];
+  res.json(randomQuestion);
 
   res.json(randomQuestion);
 } catch (error) {
@@ -34,7 +46,7 @@ try{
 app.get('/api/categories', (req, res) => {
  try {
   const categories = [...new set(questions.map(q=>q.category))];
-  res.json(categories);
+  res.json(category);
  } catch (error) {
   console.log("error al obtener categories", error);
   res.status(500).json({error:"error interno en el selvidor"})
